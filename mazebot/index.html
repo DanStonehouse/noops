@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> Dans Maze </title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js">
+  </script>
+</head>
+<body>
+<h1> Mazebot </h1>
+<p> Welcome to Mazebot </p>
+<h2 id="mazename"></h2>
+<button>Send an HTTP GET request to a page and get the result back</button>
+<script>
+$(document).ready(function(){
+  $("button").click(function(){
+    $.get("https://api.noopschallenge.com/mazebot/random?minSize=10&maxSize=20", function(data, status){
+      //alert("Data: " + data + "\nStatus: " + status);
+      console.log(data);
+      $('#mazename').text(data.name);
+    });
+  });
+});
+</script>
+</body>
+</html>
