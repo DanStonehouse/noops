@@ -12,10 +12,18 @@
 <h3 id="startpoint"></h3>
 <h4 id="endpoint"></h4>
 <h5 id="exsol"></h5>
+<p id="map"></p>
 <button>Send an HTTP GET request to a page and get the result back</button>
 <script>
 $(document).ready(function(){
   $("button").click(function(){
+    // clear current text values
+    $('#mazename').text("loading");
+    $('#startpoint').text("loading");
+    $('#endpoint').text("loading");
+    $('#exsol').text("loading");
+    $('#map').text("loading");
+
     $.get("https://api.noopschallenge.com/mazebot/random?minSize=10&maxSize=20", function(data, status){
       //alert("Data: " + data + "\nStatus: " + status);
       console.log(data);
@@ -23,6 +31,24 @@ $(document).ready(function(){
       $('#startpoint').text("startPoint x /  " + data.startingPosition[0] + " y / " + data.startingPosition[1]);
       $('#endpoint').text("endingPoint x / " + data.endingPosition[0] + " y / " + data.endingPosition[1]);
       $('#exsol').text("exsol / " + data.exampleSolution.directions);
+      // clear loading message
+      $('#map').text("");
+      //loop through the array of map rows
+      $.each(data.map, function( i, row ) {
+        // add current row number
+        $('#map').append(i + "/ ");
+        // loop throught the array of columns
+        $.each(row, function( j, column ) {
+          var tile = column;
+          if (tile == " ") {
+            tile = "<span style='color:Yellow'>X</span>";
+          } else if (tile == "X"){
+            tile = "<span style='color:Red'>X</span>";
+          }
+          $('#map').append(tile);
+        });
+        $('#map').append("<br>");
+      });
       //console.log
     });
   });
