@@ -9,6 +9,9 @@
 <h1> Mazebot </h1>
 <p> Welcome to Mazebot </p>
 <h2 id="mazename"></h2>
+<h3 id="startpoint"></h3>
+<h4 id="endpoint"></h4>
+<h5 id="exsol"></h5>
 <button>Send an HTTP GET request to a page and get the result back</button>
 <script>
 $(document).ready(function(){
@@ -16,7 +19,11 @@ $(document).ready(function(){
     $.get("https://api.noopschallenge.com/mazebot/random?minSize=10&maxSize=20", function(data, status){
       //alert("Data: " + data + "\nStatus: " + status);
       console.log(data);
-      $('#mazename').text(data.name);
+      $('#mazename').text("mazename / " + data.name);
+      $('#startpoint').text("startPoint x /  " + data.startingPosition[0] + " y / " + data.startingPosition[1]);
+      $('#endpoint').text("endingPoint x / " + data.endingPosition[0] + " y / " + data.endingPosition[1]);
+      $('#exsol').text("exsol / " + data.exampleSolution.directions);
+      //console.log
     });
   });
 });
