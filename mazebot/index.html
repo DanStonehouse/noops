@@ -27,90 +27,106 @@ $(document).ready(function(){
   var currentCol;
   var currentRow;
   var mapSize;
+  var complete = false;
 
   $("#Left").click(function(){
-    if (currentCol > 0) {
-      console.log("Left");
+    if (currentCol > 0 && complete == false) {
+      if( isWall(currentRow, currentCol - 1) == false ){
+        console.log("Left");
 
-      // set current tile to a space
-      clearSpace();
+        // set current tile to a space
+        clearSpace();
 
-      // decrease cuurentcol by 1
-      currentCol --;
+        // decrease cuurentcol by 1
+        currentCol --;
 
-      // set new tile as current
-      moveCharacter();
+        // set new tile as current
+        moveCharacter();
 
-      // update currentCol text
-      $('#currentCol').text("currentCol / " + currentCol);
-
+        // update currentCol text
+        $('#currentCol').text("currentCol / " + currentCol);
+      }
     } else {
       console.log("Unable Left");
     }
   });
 
   $("#Right").click(function(){
-    if (currentCol < mapSize - 1) {
-      console.log("Right");
+    if (currentCol < mapSize - 1 && complete == false) {
+      if( isWall(currentRow, currentCol + 1) == false ){
+        console.log("Right");
 
-      // set current tile to a space
-      clearSpace();
+        // set current tile to a space
+        clearSpace();
 
-      // increase cuurentcol by 1
-      currentCol ++;
+        // increase cuurentcol by 1
+        currentCol ++;
 
-      // set new tile as current
-      moveCharacter();
+        // set new tile as current
+        moveCharacter();
 
-      // update currentCol text
-      $('#currentCol').text("currentCol / " + currentCol);
-
+        // update currentCol text
+        $('#currentCol').text("currentCol / " + currentCol);
+      }
     } else {
       console.log("Unable Right");
     }
   });
 
   $("#Up").click(function(){
-    if (currentRow > 0 ) {
-      console.log("Up");
+    if (currentRow > 0 && complete == false) {
+      if( isWall(currentRow - 1, currentCol) == false ){
+        console.log("Up");
 
-      // set current tile to a space
-      clearSpace();
+        // set current tile to a space
+        clearSpace();
 
-      // decrease cuurentrow by 1
-      currentRow --;
+        // decrease cuurentrow by 1
+        currentRow --;
 
-      // set new tile as current
-      moveCharacter();
+        // set new tile as current
+        moveCharacter();
 
-      // update currentCol text
-      $('#currentRow').text("currentRow / " + currentRow);
-
+        // update currentCol text
+        $('#currentRow').text("currentRow / " + currentRow);
+      }
     } else {
       console.log("Unable Up");
     }
   });
 
   $("#Down").click(function(){
-    if (currentRow < mapSize - 1 ) {
-      console.log("Dpwn");
+    if (currentRow < mapSize - 1 && complete == false) {
+      if( isWall(currentRow + 1, currentCol) == false ){
+        console.log("Down");
 
-      // set current tile to a space
-      clearSpace();
+        // set current tile to a space
+        clearSpace();
 
-      // increase cuurentrow by 1
-      currentRow ++;
+        // increase cuurentrow by 1
+        currentRow ++;
 
-      // set new tile as current
-      moveCharacter();
+        // set new tile as current
+        moveCharacter();
 
-      // update currentCol text
-      $('#currentRow').text("currentRow / " + currentRow);
-
+        // update currentCol text
+        $('#currentRow').text("currentRow / " + currentRow);
+      }
     } else {
       console.log("Unable Down");
     }
   });
+
+  function isWall(row,col){
+    var id = "#" + row + "_" + col;
+    var type = $(id).data("type");
+    if (type == "wall"){
+      return true;
+    } else {
+      return false;
+    }
+
+  }
 
   function clearSpace(){
     var id = "#" + currentRow + "_" + currentCol;
@@ -120,8 +136,18 @@ $(document).ready(function(){
 
   function moveCharacter(){
     id = "#" + currentRow + "_" + currentCol;
-    $(id).text("A");
-    $(id).css({'color': 'White', 'background-color': 'Green'});
+
+    // Check if tile is endpoint
+    var type = $(id).data("type");
+    console.log(type);
+    if(type == "Finish"){
+      complete = true;
+      $("span").css({'color': 'Pink', 'background-color': 'Green'});
+    } else {
+      $(id).text("A");
+      $(id).css({'color': 'White', 'background-color': 'Green'});
+    }
+
   }
 
   $("#newMap").click(function(){
@@ -134,6 +160,7 @@ $(document).ready(function(){
     $('#currentCol').text("loading");
     $('#currentRow').text("loading");
     $('#mapSize').text("loading");
+    complete = false;
 
     $.get("https://api.noopschallenge.com/mazebot/random?minSize=10&maxSize=30", function(data, status){
       //alert("Data: " + data + "\nStatus: " + status);
