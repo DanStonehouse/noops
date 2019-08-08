@@ -8,13 +8,13 @@
 <body>
 <h1> Mazebot </h1>
 <p> Welcome to Mazebot </p>
-<h2 id="mazename"></h2>
-<h2 id="startpoint"></h2>
-<h2 id="endpoint"></h2>
-<h2 id="exsol"></h2>
-<h2 id="currentCol"></h2>
-<h2 id="currentRow"></h2>
-<h2 id="mapSize"></h2>
+<h4 id="mazename"></h4>
+<h4 id="startpoint"></h4>
+<h4 id="endpoint"></h4>
+<h4 id="exsol"></h4>
+<h4 id="currentCol"></h4>
+<h4 id="currentRow"></h4>
+<h4 id="mapSize"></h4>
 
 <p id="map"></p>
 <button id="newMap">New Map</button>
@@ -29,51 +29,54 @@ $(document).ready(function(){
   var mapSize;
   var complete = false;
 
-  $("#Left").click(function(){
-    if (currentCol > 0 && complete == false) {
-      if( isWall(currentRow, currentCol - 1) == false ){
-        console.log("Left");
+  $(document).keydown(function(e) {
+    switch(e.which) {
+        case 37: // left
+          moveLeft();
+          break;
+        case 38: // up
+          moveUp();
+          break;
+        case 39: // right
+          moveRight();
+        break;
+        case 40: // down
+          moveDown();
+          break;
 
-        // set current tile to a space
-        clearSpace();
-
-        // decrease cuurentcol by 1
-        currentCol --;
-
-        // set new tile as current
-        moveCharacter();
-
-        // update currentCol text
-        $('#currentCol').text("currentCol / " + currentCol);
-      }
-    } else {
-      console.log("Unable Left");
+        default: return; // exit this handler for other keys
     }
+    e.preventDefault(); // prevent the default action (scroll / move caret)
+});
+
+  $("#Left").click(function(){
+    moveLeft();
   });
 
   $("#Right").click(function(){
-    if (currentCol < mapSize - 1 && complete == false) {
-      if( isWall(currentRow, currentCol + 1) == false ){
-        console.log("Right");
-
-        // set current tile to a space
-        clearSpace();
-
-        // increase cuurentcol by 1
-        currentCol ++;
-
-        // set new tile as current
-        moveCharacter();
-
-        // update currentCol text
-        $('#currentCol').text("currentCol / " + currentCol);
-      }
-    } else {
-      console.log("Unable Right");
-    }
+    moveRight();
   });
 
   $("#Up").click(function(){
+    moveUp();
+  });
+
+  $("#Down").click(function(){
+    moveDown();
+  });
+
+  function isWall(row,col){
+    var id = "#" + row + "_" + col;
+    var type = $(id).data("type");
+    if (type == "wall"){
+      return true;
+    } else {
+      return false;
+    }
+
+  }
+
+  function moveUp(){
     if (currentRow > 0 && complete == false) {
       if( isWall(currentRow - 1, currentCol) == false ){
         console.log("Up");
@@ -93,9 +96,9 @@ $(document).ready(function(){
     } else {
       console.log("Unable Up");
     }
-  });
+  }
 
-  $("#Down").click(function(){
+  function moveDown(){
     if (currentRow < mapSize - 1 && complete == false) {
       if( isWall(currentRow + 1, currentCol) == false ){
         console.log("Down");
@@ -115,23 +118,56 @@ $(document).ready(function(){
     } else {
       console.log("Unable Down");
     }
-  });
+  }
 
-  function isWall(row,col){
-    var id = "#" + row + "_" + col;
-    var type = $(id).data("type");
-    if (type == "wall"){
-      return true;
+  function moveRight(){
+    if (currentCol < mapSize - 1 && complete == false) {
+      if( isWall(currentRow, currentCol + 1) == false ){
+        console.log("Right");
+
+        // set current tile to a space
+        clearSpace();
+
+        // increase cuurentcol by 1
+        currentCol ++;
+
+        // set new tile as current
+        moveCharacter();
+
+        // update currentCol text
+        $('#currentCol').text("currentCol / " + currentCol);
+      }
     } else {
-      return false;
+      console.log("Unable Right");
     }
+  }
 
+  function moveLeft(){
+    if (currentCol > 0 && complete == false) {
+      if( isWall(currentRow, currentCol - 1) == false ){
+        console.log("Left");
+
+        // set current tile to a space
+        clearSpace();
+
+        // decrease cuurentcol by 1
+        currentCol --;
+
+        // set new tile as current
+        moveCharacter();
+
+        // update currentCol text
+        $('#currentCol').text("currentCol / " + currentCol);
+      }
+    } else {
+      console.log("Unable Left");
+    }
   }
 
   function clearSpace(){
     var id = "#" + currentRow + "_" + currentCol;
-    $(id).text("X");
-    $(id).css({'color': 'Yellow', 'background-color': '#fff'});
+    $(id).html("&#9608;");
+    $(id).css({'color': 'Yellow', 'background-color': 'White'});
   }
 
   function moveCharacter(){
@@ -144,8 +180,8 @@ $(document).ready(function(){
       complete = true;
       $("span").css({'color': 'Pink', 'background-color': 'Green'});
     } else {
-      $(id).text("A");
-      $(id).css({'color': 'White', 'background-color': 'Green'});
+      $(id).html("&#9608;");
+      $(id).css({'color': 'Green'});
     }
 
   }
@@ -162,8 +198,7 @@ $(document).ready(function(){
     $('#mapSize').text("loading");
     complete = false;
 
-    $.get("https://api.noopschallenge.com/mazebot/random?minSize=10&maxSize=30", function(data, status){
-      //alert("Data: " + data + "\nStatus: " + status);
+    $.get("https://api.noopschallenge.com/mazebot/random?minSize=10&maxSize=40", function(data, status){
       console.log(data);
       $('#mazename').text("mazename / " + data.name);
       $('#startpoint').text("startPoint x /  " + data.startingPosition[0] + " y / " + data.startingPosition[1]);
@@ -178,30 +213,27 @@ $(document).ready(function(){
       $('#map').text("");
       //loop through the array of map rows
       $.each(data.map, function( i, row ) {
-        // add current row number
-        $('#map').append(i + "/ ");
         // loop through the array of columns
         $.each(row, function( j, column ) {
           var tile = column;
           if (tile == " ") {
-            tile = "<span id='" + i + "_" + j + "' data-type='space' style='color:Yellow'>X</span>";
+            tile = "<span id='" + i + "_" + j + "' data-type='space' style='color:Silver'>&#9608;</span>";
           } else if (tile == "X"){
-            tile = "<span id='" + i + "_" + j + "' data-type='wall' style='color:Red'>X</span>";
+            tile = "<span id='" + i + "_" + j + "' data-type='wall' style='color:Navy'>&#9608;</span>";
           }  else if (tile == "A"){
-            tile = "<span id='" + i + "_" + j + "' style='color:White;background-color:Green'>A</span>";
+            tile = "<span id='" + i + "_" + j + "' style='color:green;background-color:white'>&#9608;</span>";
             currentCol=j;
             currentRow=i;
 
             $('#currentCol').text("currentCol / " + currentCol);
             $('#currentRow').text("currentRow / " + currentRow);
           }  else if (tile == "B"){
-            tile = "<span id='" + i + "_" + j + "' data-type='Finish' style='color:White;background-color:Red'>B</span>";
+            tile = "<span id='" + i + "_" + j + "' data-type='Finish' style='color:Purple;background-color:Red'>&#9608;</span>";
           }
           $('#map').append(tile);
         });
         $('#map').append("<br>");
       });
-      //console.log
     });
   });
 });
